@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" > <!--thymeleaf namespace : gợi ý cu pháp cho thymeleaf-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,10 +10,10 @@
 <body>
 <div class="container mt-5">
     <h1 class="mb-4">Books List</h1>
-    <div>
-        Search: <input type="text" id="search" class="form-control mb-4" placeholder="Search by title.....">
-        <button class="btn btn-primary mb-4" onclick="searchBooks()">Search</button>
-    </div>
+    <form action="/" method="get">
+        Search: <input type="text" id="search" name="title" class="form-control mb-4" placeholder="Search by title...">
+        <button type="submit" class="btn btn-primary mb-4">Search</button>
+    </form>
 
     <table class="table table-striped table-bordered">
         <thead class="thead-dark">
@@ -26,14 +26,17 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="book : ${books}">
+        <tr th:each="book : ${books}" th:classappend="${book.id % 2 == 0} ? 'table-primary' : 'table-secondary'">
             <td th:text="${book.id}"></td>
             <td th:text="${book.title}"></td>
             <td th:text="${book.author}"></td>
             <td th:text="${book.year}"></td>
             <td>
-                <button class="btn btn-primary">Edit</button>
-                <button class="btn btn-danger">Delete</button>
+<!--                <button class="btn btn-primary">Edit</button>-->
+<!--                <button class="btn btn-danger ml-2">Delete</button>-->
+                <a th:href="'/books/' + ${book.id}" class="btn btn-secondary ml-2">Xem</a>
+<!--                <a th:href="|/books/${book.id}|" class="btn btn-secondary ml-2">Xem</a>-->
+<!--                <a th:href="@{/books/{id}(id=${book.id})}" class="btn btn-secondary ml-2">Xem</a>-->
             </td>
         </tr>
         </tbody>

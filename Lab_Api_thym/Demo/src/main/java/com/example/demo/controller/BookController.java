@@ -3,7 +3,10 @@ package com.example.demo.controller;
 
 import com.example.demo.database.BookDB;
 import com.example.demo.model.Book;
+import com.example.demo.model.PageResponse;
+import com.example.demo.model.PageResponseImPL;
 import com.example.demo.service.BookService;
+import com.github.javafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,21 +36,77 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping("/books")// GET: http:localhost:8082/books
-    // @ResponseBody// dữ liệu trả về bo dy của respnonse
-    //  @ResponseStatus(HttpStatus.CREATED) //201
-    public String getBooks(Model model) {
-        List<Book> books = bookService.getAllBook();
-        model.addAttribute("books", books);
+    private List<Book> books = new ArrayList<>();
+
+    public BookController() {
+        Faker faker = new Faker();
+        for (int i = 0; i < 30; i++) {
+            Book book = Book.builder()
+                .id(i)
+                .title(faker.book().title())
+                .author(faker.book().author())
+                .year(faker.number().numberBetween(1950, 2021))
+                .build();
+            books.add(book);
+        }
+    }
+
+
+    //phân trang
+    // mặc định ko có page và size thì trả về trang 1 và 10 phần tử
+    //currentPage = trang hiện tại là trang nào
+    //pageSize = số lượng phần tử trên 1 trang là bao nhiêu
+    //totalElements = tổng số phần tử
+    //totalPages = tổng số trang = totalElements/pageSize
+    //content = danh sách phần tử trên trang hiện tại
+
+    @GetMapping("/books") // GET: http://localhost:8082/books?page=1&size=10
+    public String getBooks(Model model,
+                           @RequestParam(required = false, defaultValue = "1") int page,
+                           @RequestParam(required = false, defaultValue = "10") int size) {
+
+        PageResponse<Book> pageResponse = PageResponseImPL.<Book>builder()
+            .currentPage(page)
+            .pageSize(size)
+            .data(books)
+            .build();
+        model.addAttribute("pageResponse", pageResponse);
+        return "book";
+    }
+
+// khi click submit thi vao dây
+    @GetMapping
+    public String getBooks(Model model, @RequestParam(required = false) String title) {
+        List<Book> newbooks;
+        if (title != null && !title.isEmpty()) {
+            newbooks = BookDB.books.stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .collect(Collectors.toList());
+        } else {
+            newbooks = BookDB.books;
+        }
+
+        model.addAttribute("books", newbooks);
         return "index";
     }
 
-    @GetMapping("/books/{id}")
-    public String findBookByTitle(Model model, @PathVariable int id) {
-        Book books = bookService.findBookById(id);
-        model.addAttribute("books", books);
-        return "index";
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @GetMapping("books/search/{title}")
     public String findBookByTitle(Model model, @PathVariable String title) {
@@ -56,6 +115,15 @@ public class BookController {
         return "index";
     }
 
+    @GetMapping("/books/{id}")
+    public String getBookDetail(Model model, @PathVariable int id) {
+        Book book = BookDB.books.stream()
+            .filter(b -> b.getId() == id)
+            .findFirst()
+            .orElse(null);
+        model.addAttribute("book", book);
+        return "bookDetail";
+    }
 
     @GetMapping("/books/sortByYear")
     public String sortByYear(Model model) {
@@ -70,14 +138,6 @@ public class BookController {
         model.addAttribute("books", books);
         return "index";
     }
-
-
-
-
-
-
-
-
 
 
 //
