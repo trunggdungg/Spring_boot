@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">Home Product</h1>
+    <form action="/" method="get">
+        Search: <input type="text" id="search" name="name" class="form-control mb-4" placeholder="Search by name...">
+        <button type="submit" class="btn btn-primary mb-4">Search</button>
+    </form>
+    <a class="btn btn-primary mb-4" th:href="@{/product/sortByPrice}">Sort Products </a>
+
+    <!--    http://localhost:8080/product/fromPrice/2000/toPrice/5000-->
+    <form id="priceFilterForm" action="#" method="get" onsubmit="updateFormAction()">
+        <div class="form-row">
+            <div class="col">
+                <input type="number" id="fromPrice" name="fromPrice" class="form-control mb-4" placeholder="From Price">
+            </div>
+            <div class="col">
+                <input type="number" id="toPrice" name="toPrice" class="form-control mb-4" placeholder="To Price">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-4">Filter</button>
+    </form>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Rating</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td><img th:src="${product.thumbnail}" th:alt="${product.name}" class="img-fluid" style="width: 100px; height: auto;"></td>
+            <td th:text="${product.name}"></td>
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.price}"></td>
+            <td th:text="${product.priceDiscount}"></td>
+            <td th:text="${product.rating}"></td>
+            <td>
+                <a th:href="@{'/product/' + ${product.id}}" class="btn btn-primary">Detail</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    function updateFormAction() {
+        var fromPrice = document.getElementById("fromPrice").value;
+        var toPrice = document.getElementById("toPrice").value;
+
+        var form = document.getElementById("priceFilterForm");
+        form.action = '/product/fromPrice/' + fromPrice + '/toPrice/' + toPrice;
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
