@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="my-4">Student Page</h1>
+
+    <table class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Year</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="student : ${pageRespone.getContent()}">
+            <td th:text="${student.id}">1</td>
+            <td th:text="${student.name}">John Doe</td>
+            <td th:text="${student.year}">2023</td>
+            <td th:text="${student.email}">john.doe@example.com</td>
+            <td th:text="${student.phone}">123-456-7890</td>
+            <td th:text="${student.address}">123 Main St</td>
+            <td>
+                <!--                href '/student/' + id = @Getmapping("Link)-->
+                <a th:href="'/student/' + ${student.id}" class="btn btn-primary">Xem</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center align-items-center">
+        <button class="btn btn-primary mx-1" th:if="${pageRespone.getCurrentPage() > 1}">
+            <a th:href="|/students?page=${pageRespone.getCurrentPage() - 1}|" class="text-white">Trang trước</a>
+        </button>
+        <button class="btn btn-primary mx-1"
+                th:style="${pageRespone.getCurrentPage() == number ? 'background-color: red' : ''}"
+                th:each="number : ${#numbers.sequence(1, pageRespone.getTotalElement())}">
+            <a th:href="|/students?page=${number}|" th:text="${number}" class="text-white"></a>
+        </button>
+        <button class="btn btn-primary mx-1" th:if="${pageRespone.getCurrentPage() < pageRespone.getTotalPage()}">
+            <a th:href="|/students?page=${pageRespone.getCurrentPage() + 1}|" class="text-white">Trang sau</a>
+        </button>
+    </div>
+
+</div>
+<script th:src="@{/js/main.js}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
