@@ -17,7 +17,6 @@
             <th>Title</th>
             <th>Author</th>
             <th>Year</th>
-            <!--        <th class="text-center">Action</th>-->
         </tr>
         </thead>
         <tbody>
@@ -27,14 +26,37 @@
                 <td th:text="${book.title}"></td>
                 <td th:text="${book.author}"></td>
                 <td th:text="${book.year}"></td>
-
             </th:block>
-
         </tr>
         </tbody>
     </table>
-</div>
 
+    <div th:if="${relatedBooks != null && !relatedBooks.isEmpty()}">
+        <h3>Related Books</h3>
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Year</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="relatedBook : ${relatedBooks}">
+                <td th:text="${relatedBook.id}"></td>
+                <td th:text="${relatedBook.title}"></td>
+                <td th:text="${relatedBook.author}"></td>
+                <td th:text="${relatedBook.year}"></td>
+<!--                <td>-->
+<!--                    <a th:href="@{/books/{id}(id=${relatedBook.id})}" class="btn btn-primary">View Details</a>-->
+<!--                </td>-->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

@@ -74,7 +74,7 @@ public class BookController {
         return "book";
     }
 
-// khi click submit thi vao dây
+// khi click submit tim kiêm thi vao dây
     @GetMapping
     public String getBooks(Model model, @RequestParam(required = false) String title) {
         List<Book> newbooks;
@@ -115,15 +115,45 @@ public class BookController {
         return "index";
     }
 
+//    @GetMapping("/books/{id}")
+//    public String getBookDetail(Model model, @PathVariable int id) {
+//        Book book = BookDB.books.stream()
+//            .filter(b -> b.getId() == id)
+//            .findFirst()
+//            .orElse(null);
+//        model.addAttribute("book", book);
+//        return "bookDetail";
+//    }
+
     @GetMapping("/books/{id}")
     public String getBookDetail(Model model, @PathVariable int id) {
         Book book = BookDB.books.stream()
             .filter(b -> b.getId() == id)
             .findFirst()
             .orElse(null);
+
+        List<Book> relatedBooks = BookDB.books.stream()
+            .filter(b -> b.getAuthor().equals(book.getAuthor()) && b.getId() != book.getId())
+            .sorted(Comparator.comparing(Book::getYear).reversed())
+            .limit(4)
+            .collect(Collectors.toList());
+
         model.addAttribute("book", book);
+        model.addAttribute("relatedBooks", relatedBooks);
         return "bookDetail";
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @GetMapping("/books/sortByYear")
     public String sortByYear(Model model) {
