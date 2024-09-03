@@ -2,8 +2,11 @@ package com.example.movie_app.repository;
 
 import com.example.movie_app.entity.Movie;
 import com.example.movie_app.model.Movie_Type;
-import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 
 import java.util.List;
 
@@ -22,6 +25,9 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
     List<Movie> findByStatusOrderByReleaseYearDesc(Boolean status);
 
+    Page<Movie> findByStatus(Boolean status, Pageable pageable);
+    List<Movie> findByStatus(Boolean status, Sort sort);
+
     long countByType(Movie_Type type);
 
     boolean existsByRatingGreaterThan(Double rating);
@@ -32,5 +38,14 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
     List<Movie> findTop5ByTypeAndStatusOrderByCreatedAtDescRatingAsc(Movie_Type type, Boolean status);
 
+
+
+    //ứng dụng movie
+
+    Page<Movie> findByTypeAndStatus(Movie_Type type,Boolean status, Pageable pageable);// phân trang voi 1 loại phim và status
+
+    Movie findMovieByNameAndSlug(String name, String slug);
+
+    List<Movie> findTop4ByType(Movie_Type type, Sort rating);
 
 }

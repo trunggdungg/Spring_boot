@@ -8,6 +8,10 @@ import com.github.slugify.Slugify;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,5 +82,48 @@ class MovieAppApplicationTests {
     public void testgetphim(){
         List<Movie> movie = movieRepository.findTop5ByTypeAndStatusOrderByCreatedAtDescRatingAsc(Movie_Type.PHIM_BO, false);
         System.out.println("Phim bo: " + movie);
+    }
+
+    @Test
+    public void sortPhim() {
+        List<Movie> movie = movieRepository.findByStatus(false, Sort.by("name", "releaseYear").descending());
+        for (   Movie movie1 : movie
+             ) {
+            System.out.println(movie1);
+        }
+    }
+
+    @Test
+    public void pagePhim() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Movie> pageData = movieRepository.findByStatus(false,pageable);
+        System.out.println("total page: " + pageData.getTotalPages());
+        System.out.println("total element: " + pageData.getTotalElements());
+        System.out.println("Is first: " + pageData.isFirst());
+
+       pageData.getContent().forEach(System.out::println);
+
+    }
+
+    @Test
+    public void testGet(){
+      Movie movie3  =   movieRepository.findByNameAndSlug("Phim 1", "leesa-schuster-iii");
+        System.out.println("Movie 3: " + movie3);
+
+        Movie movie4 = movieRepository.findMovieByNameAndSlug("Phim 1", "leesa-schuster-iii");
+        System.out.println("Movie 4: " + movie4);
+    }
+
+    @Test
+    public void testPhimHot(){
+        List<Movie> movie = movieRepository.findTop4ByType(Movie_Type.PHIM_HOT, Sort.by("rating").descending());
+        System.out.println("Phim hot: " + movie);
+    }
+
+    @Test
+    public void getMoviesByType(){
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        Page<Movie> movie = movieRepository.findByTypeAndStatus(Movie_Type.PHIM_BO, true, pageable);
+        System.out.println("Phim bo: " + movie.getContent());
     }
 }
