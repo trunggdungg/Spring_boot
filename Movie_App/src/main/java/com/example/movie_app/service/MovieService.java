@@ -25,4 +25,8 @@ private final MovieRepository movieRepository;
         return movieRepository.findTop4ByType(Movie_Type.PHIM_LE, Sort.by("rating").descending());
     }
 
+    public Movie getMovieDetails(Integer id, String slug) {
+        return movieRepository.findByIdAndSlugAndStatus(id, slug, true)
+            .orElse(null);
+    }
 }

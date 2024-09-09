@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
@@ -48,4 +49,11 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
 
     List<Movie> findTop4ByType(Movie_Type type, Sort rating);
 
+    //phim dề xuat
+    // nhung phim cung loai khong chua phim dang xem
+    // lay theo rateting giam dan
+    // lay 6 ban ghi
+    //status = true
+    List<Movie> findTop6ByTypeAndStatusAndNameNot(Movie_Type type, Boolean status, String name, Sort rating);
+    Optional<Movie> findByIdAndSlugAndStatus(Integer id, String slug, Boolean status);
 }

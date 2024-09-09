@@ -49,3 +49,22 @@ table, th, td {
 .no-border {
     border: none;
 }
+.movie-poster {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.play-icon {
+    position: absolute;
+
+}
+.fa-circle-play:before, .fa-play-circle:before {
+    content: "\f144";
+    font-size: 50px;
+}
+
+.fa-circle-play{
+    font-size: 50px;
+}

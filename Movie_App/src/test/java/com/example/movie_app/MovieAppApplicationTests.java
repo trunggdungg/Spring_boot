@@ -1,7 +1,9 @@
 package com.example.movie_app;
 
+import com.example.movie_app.entity.Blog;
 import com.example.movie_app.entity.Movie;
 import com.example.movie_app.model.Movie_Type;
+import com.example.movie_app.repository.BlogRepository;
 import com.example.movie_app.repository.MovieRepository;
 import com.github.javafaker.Faker;
 import com.github.slugify.Slugify;
@@ -22,6 +24,8 @@ class MovieAppApplicationTests {
 
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private BlogRepository blogRepository;
 
     @Test
     void save_movies() {
@@ -48,7 +52,34 @@ class MovieAppApplicationTests {
             movieRepository.save(movie);
 
         }
+    }
 
+    @Test
+    void save_blogs() {
+        Faker faker = new Faker();
+        Random rd = new Random();
+        Slugify slugify = Slugify.builder().build();
+
+        for (int i = 0; i < 100; i++) {
+            String title = faker.book().title();
+            boolean status = rd.nextInt(2) == 0;
+            Blog blog = Blog.builder()
+                .title(title)
+                .slug(slugify.slugify(title))
+                .content(faker.lorem().paragraph(100))
+                .description(faker.lorem().paragraph())
+                .thumbnail(generateLinkImage(title))
+                .status(status)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .publishedAt(status ? LocalDateTime.now() : null)
+                .build();
+
+            blogRepository.save(blog);
+        }
+    }
+    private String generateLinkImage(String name) {
+        return "https://placehold.co/200x200?text=" + name.substring(0, 1).toUpperCase();
     }
     @Test
     void test_method () {

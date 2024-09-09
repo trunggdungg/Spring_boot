@@ -1,10 +1,13 @@
 package com.example.movie_app.entity;
 
+import com.github.javafaker.Faker;
+import com.github.slugify.Slugify;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -21,9 +24,9 @@ public class Blog {
     Integer id;
 
     String title;
-    @Column(unique = true, nullable = false)
+
     String slug;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "MEDIUMTEXT")
     String content;
     @Column(columnDefinition = "TEXT")
     String description;
@@ -32,5 +35,6 @@ public class Blog {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     LocalDateTime publishedAt;
+
 
 }
