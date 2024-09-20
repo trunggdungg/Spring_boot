@@ -22,4 +22,16 @@ public class History {
    double duration;
    LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "movie_id")
+    Movie movie;
+
+    @ManyToOne
+    @JoinColumn(name = "episode_id")
+    Episode episode;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
 }

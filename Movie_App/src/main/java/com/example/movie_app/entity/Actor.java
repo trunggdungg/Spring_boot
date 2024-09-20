@@ -20,6 +20,7 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     String name;
+    String slug;
     @Column(columnDefinition = "TEXT")
     String biography;
     String avatar;

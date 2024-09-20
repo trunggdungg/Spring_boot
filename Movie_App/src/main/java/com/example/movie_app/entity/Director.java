@@ -22,6 +22,9 @@ public class Director {
     String name;
     @Column(columnDefinition = "TEXT")
     String slug;
+    String avatar;
+    @Column(columnDefinition = "TEXT")
+    String biography;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 

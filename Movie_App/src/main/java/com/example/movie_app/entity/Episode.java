@@ -27,5 +27,9 @@ public class Episode {
     Boolean status;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
-    LocalDate publishedAt;
+    LocalDateTime publishedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "movie_id")
+    Movie movie;
 }

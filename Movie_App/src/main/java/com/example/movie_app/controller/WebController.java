@@ -83,6 +83,8 @@ public class WebController {
                                       @PathVariable String slug) {
         Movie movie = movieService.getMovieDetails(id, slug);
         model.addAttribute("movie", movie);
+        model.addAttribute("genres", movie.getGenres());
+        model.addAttribute("actors", movie.getActors());
         return "web/chi-tiet-phim";
     }
 

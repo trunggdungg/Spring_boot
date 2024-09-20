@@ -28,4 +28,8 @@ public class User {
     String avatar;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    // tra ve giao dien thi dung @ConTroller
+    // tra ve du lieu json thi dung @RestController
+
 }

@@ -36,5 +36,11 @@ public class Blog {
     LocalDateTime updatedAt;
     LocalDateTime publishedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    User user;
+
+    // nhieu blog thuoc ve 1 user
+
 
 }
