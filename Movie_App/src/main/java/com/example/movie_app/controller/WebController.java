@@ -1,10 +1,12 @@
 package com.example.movie_app.controller;
 
-import com.example.movie_app.entity.Blog;
-import com.example.movie_app.entity.Movie;
+import com.example.movie_app.entity.*;
 import com.example.movie_app.model.Movie_Type;
 import com.example.movie_app.service.BlogService;
+import com.example.movie_app.service.EpisodeService;
 import com.example.movie_app.service.MovieService;
+import com.example.movie_app.service.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -21,59 +23,49 @@ public class WebController {
 
     private final MovieService movieService;
     private final BlogService blogService;
+    private final ReviewService reviewService;
+    private final EpisodeService episodeService;
 
-
-
-    // phim bo?page=1&size=10
-    @GetMapping("/phim-bo")
-    public String getPhimBo(Model model,
-                            @RequestParam (required = false, defaultValue = "1") int page,
-                            @RequestParam (required = false, defaultValue = "12") int size){
-        Page<Movie> movieData = movieService.getMoviesByType(Movie_Type.PHIM_BO, true, page, size);
-        //Model là 1 đối tượng dùng để truyền dữ liệu từ controller sang view
-        model.addAttribute("movieData", movieData);
-        model.addAttribute("currentPage", page);
-        return "/web/phim-bo";
-
-        // phim/1/chua-test
+    @GetMapping("/")
+    public String getHomePage(Model model) {
+        List<Movie> listPhimBo = movieService.getMoviesByType(Movie_Type.PHIM_BO, true, 1, 6).getContent();
+        List<Movie> listPhimLe = movieService.getMoviesByType(Movie_Type.PHIM_LE, true, 1, 6).getContent();
+        List<Movie> listPhimChieuRap = movieService.getMoviesByType(Movie_Type.PHIM_CHIEU_RAP, true, 1, 6).getContent();
+        model.addAttribute("listPhimBo", listPhimBo);
+        model.addAttribute("listPhimLe", listPhimLe);
+        model.addAttribute("listPhimChieuRap", listPhimChieuRap);
+        return "web/index";
     }
 
+    // /phim-bo?page=1&pageSize=12
+    @GetMapping("/phim-bo")
+    public String getPhimBoPage(Model model,
+                                @RequestParam(required = false, defaultValue = "1") int page,
+                                @RequestParam(required = false, defaultValue = "12") int pageSize) {
+        Page<Movie> pageData = movieService.getMoviesByType(Movie_Type.PHIM_BO, true, page, pageSize);
+        model.addAttribute("pageData", pageData);
+        model.addAttribute("currentPage", page);
+        return "web/phim-bo";
+    }
 
     @GetMapping("/phim-le")
-    public String getPhimLe(Model model,
-                            @RequestParam (required = false, defaultValue = "1") int page,
-                            @RequestParam (required = false, defaultValue = "12") int size){
-        Page<Movie> movieData = movieService.getMoviesByType(Movie_Type.PHIM_LE, true, page, size);
-        model.addAttribute("movieData", movieData);
+    public String getPhimLePage(Model model,
+                                @RequestParam(required = false, defaultValue = "1") int page,
+                                @RequestParam(required = false, defaultValue = "12") int pageSize) {
+        Page<Movie> pageData = movieService.getMoviesByType(Movie_Type.PHIM_LE, true, page, pageSize);
+        model.addAttribute("pageData", pageData);
         model.addAttribute("currentPage", page);
-        return "/web/phim-le";
+        return "web/phim-le";
     }
 
     @GetMapping("/phim-chieu-rap")
-    public String getPhimChieuRap(Model model,
-                                  @RequestParam (required = false, defaultValue = "1") int page,
-                                  @RequestParam (required = false, defaultValue = "12") int size){
-        Page<Movie> movieData = movieService.getMoviesByType(Movie_Type.PHIM_CHIEU_RAP, true, page, size);
-        model.addAttribute("movieData", movieData);
+    public String getPhimChieuRapPage(Model model,
+                                      @RequestParam(required = false, defaultValue = "1") int page,
+                                      @RequestParam(required = false, defaultValue = "12") int pageSize) {
+        Page<Movie> pageData = movieService.getMoviesByType(Movie_Type.PHIM_CHIEU_RAP, true, page, pageSize);
+        model.addAttribute("pageData", pageData);
         model.addAttribute("currentPage", page);
-        return "/web/phim-chieu-rap";
-    }
-
-
-
-    @GetMapping
-    public String getHome(Model model){
-        List<Movie> listPhimBo = movieService.getMoviesByType(Movie_Type.PHIM_BO, true, 1, 6).getContent();
-        List<Movie> listPhimLe = movieService.getMoviesByType(Movie_Type.PHIM_LE, true, 1, 6).getContent();
-        List<Movie> listPhimCR = movieService.getMoviesByType(Movie_Type.PHIM_CHIEU_RAP, true, 1, 6).getContent();
-
-        List<Movie> listPhimHot = movieService.getMovieHot();
-
-        model.addAttribute("listPhimBo", listPhimBo);
-        model.addAttribute("listPhimle", listPhimLe);
-        model.addAttribute("listPhimCR", listPhimCR);
-        model.addAttribute("listPhimHot", listPhimHot);
-        return "/web/index";
+        return "web/phim-chieu-rap";
     }
 
     // /phim/1/chua-te-nhung-chiec-nhan
@@ -82,10 +74,28 @@ public class WebController {
                                       @PathVariable Integer id,
                                       @PathVariable String slug) {
         Movie movie = movieService.getMovieDetails(id, slug);
+        List<Review> reviews = reviewService.getReviewsByMovieId(id);
+        List<Episode> episodes = episodeService.getEpisodesActiveByMovie(id);
         model.addAttribute("movie", movie);
-        model.addAttribute("genres", movie.getGenres());
-        model.addAttribute("actors", movie.getActors());
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("episodes", episodes);
         return "web/chi-tiet-phim";
+    }
+
+    @GetMapping("/xem-phim/phim/{id}/{slug}")
+    public String getMovieStreamingDetailsPage(Model model,
+                                               @PathVariable Integer id,
+                                               @PathVariable String slug,
+                                               @RequestParam String tap) {
+        Movie movie = movieService.getMovieDetails(id, slug);
+        List<Review> reviews = reviewService.getReviewsByMovieId(id);
+        List<Episode> episodes = episodeService.getEpisodesActiveByMovie(id);
+        Episode currentEpisode = episodeService.getEpisodeByDisplayOrder(id, tap);
+        model.addAttribute("movie", movie);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("episodes", episodes);
+        model.addAttribute("currentEpisode", currentEpisode);
+        return "web/xem-phim";
     }
 
     @GetMapping("/tin-tuc")
@@ -107,4 +117,21 @@ public class WebController {
         return "web/chi-tiet-tin-tuc";
     }
 
+    @GetMapping("/dang-nhap")
+    public String loginPage(HttpServletRequest request) {
+        User user = (User) request.getSession().getAttribute("CURRENT_USER");
+        if (user != null) {
+            return "redirect:/";
+        }
+        return "web/dang-nhap";
+    }
+
+    @GetMapping("/dang-ky")
+    public String signupPage(HttpServletRequest request) {
+//        User user = (User) request.getSession().getAttribute("CURRENT_USER");
+//        if (user != null) {
+//            return "redirect:/";
+//        }
+        return "web/dang-ky";
+    }
 }

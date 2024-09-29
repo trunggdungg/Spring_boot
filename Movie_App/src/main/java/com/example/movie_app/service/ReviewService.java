@@ -8,10 +8,13 @@ import com.example.movie_app.model.request.UpdateReviewRequest;
 import com.example.movie_app.repository.MovieRepository;
 import com.example.movie_app.repository.ReviewRepository;
 import com.example.movie_app.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service// phai danh dau la @Service de spring boot biet day la 1 service
 @RequiredArgsConstructor// hoặc dùng @Autowired
@@ -19,64 +22,55 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
+    private final HttpSession httpSession;
+    public List<Review> getReviewsByMovieId(Integer movieId) {
+        return reviewRepository.findByMovie_Id(movieId, Sort.by(Sort.Direction.DESC, "createdAt"));
+    }
 
-    public Review createReview(CreateReviewRequest createReviewRequest) {
-        //to do : fix cung 1 user , sau nay se la user dang dang nhap
-        Integer userId = 1;
-        User user = userRepository.findById(userId).
-            orElseThrow(() -> new RuntimeException("User not found : " + userId));
+    public Review createReview(CreateReviewRequest request) {
+       User user = (User) httpSession.getAttribute("CURRENT_USER");
 
-        Movie movie = movieRepository.findById(createReviewRequest.getMovieId()).
-            orElseThrow(() -> new RuntimeException("Movie not found : " + createReviewRequest.getMovieId()));
+        Movie movie = movieRepository.findById(request.getMovieId())
+            .orElseThrow(() -> new RuntimeException("Movie not found with id: " + request.getMovieId()));
 
-        // bổ sung validate rating, content
-        //tao ra 1 review, set cac gia tri cho review, sau do save vao database
+        // TODO: Bổ sung validate rating, content
         Review review = Review.builder()
-            .content(createReviewRequest.getContent())
-            .rating(createReviewRequest.getRating())
+            .content(request.getContent())
+            .rating(request.getRating())
             .movie(movie)
             .user(user)
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
             .build();
-
         return reviewRepository.save(review);
     }
 
-    public Review updateReview(UpdateReviewRequest updateReviewRequest, Integer id) {
-        //to do : fix cung 1 user , sau nay se la user dang dang nhap
-        Integer userId = 1;
-        User user = userRepository.findById(userId).
-            orElseThrow(() -> new RuntimeException("User not found : " + userId));
+    public Review updateReview( UpdateReviewRequest request,Integer id) {
+        User user = (User) httpSession.getAttribute("CURRENT_USER");
 
-        Review review = reviewRepository.findById(id).
-            orElseThrow(() -> new RuntimeException("Review not found : " + id));
+        Review review = reviewRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
 
-        // check xem review co phai cua user dang dang nhap khong
-        if (!review.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You can not update this review");
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not owner of this review");
         }
 
-        // bổ sung validate rating, content
-        review.setContent(updateReviewRequest.getContent());
-        review.setRating(updateReviewRequest.getRating());
+        // TODO: Bổ sung validate rating, content
+        review.setContent(request.getContent());
+        review.setRating(request.getRating());
         review.setUpdatedAt(LocalDateTime.now());
         return reviewRepository.save(review);
     }
 
     public void deleteReview(Integer id) {
-        Integer userId = 1;
-        User user = userRepository.findById(userId).
-            orElseThrow(() -> new RuntimeException("User not found : " + userId));
+        User user = (User) httpSession.getAttribute("CURRENT_USER");
 
-        Review review = reviewRepository.findById(id).
-            orElseThrow(() -> new RuntimeException("Review not found : " + id));
+        Review review = reviewRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
 
-        // check xem review co phai cua user dang dang nhap khong
-        if (!review.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You can not update this review");
+        if (!review.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("You are not owner of this review");
         }
-
         reviewRepository.delete(review);
     }
 }

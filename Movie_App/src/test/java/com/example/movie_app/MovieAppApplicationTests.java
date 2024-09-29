@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,7 +56,18 @@ class MovieAppApplicationTests {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    //là bean cần inject vào nơi cần sử dụng
 
+    @Test
+    void encode_user_password() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            user.setPassword(passwordEncoder.encode("123"));
+            userRepository.save(user);
+        }
+    }
 
     @Test
     void save_users() {
@@ -401,5 +414,16 @@ class MovieAppApplicationTests {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
         Page<Movie> movie = movieRepository.findByTypeAndStatus(Movie_Type.PHIM_BO, true, pageable);
         System.out.println("Phim bo: " + movie.getContent());
+    }
+
+    @Test
+    @Transactional
+    void testFindByMovieIdAndStatus() {
+        Movie movie = movieRepository.findById(1).orElse(null);
+        // Access the genres collection to initialize it
+        movie.getGenres().size();
+        // Test findByMovieIdAndStatus
+        Episode foundEpisode = episodeRepository.findByMovieIdAndStatusAndDisplayOrder(movie.getId(), true, 1);
+        System.out.println("Episode: " + foundEpisode);
     }
 }
