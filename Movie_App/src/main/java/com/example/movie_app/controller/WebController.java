@@ -134,4 +134,15 @@ public class WebController {
 //        }
         return "web/dang-ky";
     }
+
+    @GetMapping("/thong-tin-ca-nhan")
+    public String profilePage(HttpServletRequest request,Model model) {
+        User user = (User) request.getSession().getAttribute("CURRENT_USER");
+        if (user == null) {
+            return "redirect:/dang-nhap";
+        }
+        model.addAttribute("user", user);
+        System.out.println("user = " + user.getName());
+        return "web/thong-tin-ca-nhan";
+    }
 }

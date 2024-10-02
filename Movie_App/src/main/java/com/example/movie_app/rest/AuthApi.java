@@ -3,6 +3,8 @@ package com.example.movie_app.rest;
 import com.example.movie_app.entity.Review;
 import com.example.movie_app.model.request.LoginRequest;
 import com.example.movie_app.model.request.SignupRequest;
+import com.example.movie_app.model.request.UpdatePasswordRequest;
+import com.example.movie_app.model.request.UpdateProfileUserRequest;
 import com.example.movie_app.model.response.ErrorResponse;
 import com.example.movie_app.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +59,34 @@ public class AuthApi {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+
+    @PutMapping("/update-name")
+    public ResponseEntity<?> updateName(@RequestBody UpdateProfileUserRequest updateProfileUserRequest) {
+        try {
+            authService.updateName(updateProfileUserRequest);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(e.getMessage())
+                .build();
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordRequest updatePasswordRequest) {
+        try {
+            authService.updatePassword(updatePasswordRequest);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message(e.getMessage())
+                .build();
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
+
 
 }

@@ -4,6 +4,8 @@ import com.example.movie_app.entity.User;
 import com.example.movie_app.model.User_Role;
 import com.example.movie_app.model.request.LoginRequest;
 import com.example.movie_app.model.request.SignupRequest;
+import com.example.movie_app.model.request.UpdatePasswordRequest;
+import com.example.movie_app.model.request.UpdateProfileUserRequest;
 import com.example.movie_app.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,21 @@ public class AuthService {
             .role(User_Role.USER)
             .createdAt(LocalDateTime.now())
             .build();
+        userRepository.save(user);
+    }
+
+    public void updateName(UpdateProfileUserRequest updateProfileUserRequest) {
+        User user = (User) httpSession.getAttribute("CURRENT_USER");
+        user.setName(updateProfileUserRequest.getName());
+        userRepository.save(user);
+    }
+
+    public void updatePassword(UpdatePasswordRequest updatePasswordRequest) {
+        User user = (User) httpSession.getAttribute("CURRENT_USER");
+        if (!passwordEncoder.matches(updatePasswordRequest.getOldPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid Password");
+        }
+        user.setPassword(passwordEncoder.encode(updatePasswordRequest.getNewPassword()));
         userRepository.save(user);
     }
 }
