@@ -137,6 +137,10 @@ formReviewEl.addEventListener("submit", (e) => {
 
 // Tạo review
 const createReview = async () => {
+if (!sessionStorage.getItem("CURRENT_USER")) {
+        toastr.warning("Vui lòng đăng nhập để bình luận");
+        return;
+}
     if (currentRating === 0) {
         toastr.warning("Vui lòng chọn số sao");
         return;

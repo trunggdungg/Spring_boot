@@ -45,7 +45,7 @@ public class Movie {
     @JoinColumn(name = "country_id")
     Country country;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_genres",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -56,7 +56,7 @@ public class Movie {
     // 1 phim co the thuoc nhieu the loai
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_actors",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -65,7 +65,7 @@ public class Movie {
     List<Actor> actors;
     // 1 phim co the co nhieu dien vien
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_directors",
             joinColumns = @JoinColumn(name = "movie_id"),

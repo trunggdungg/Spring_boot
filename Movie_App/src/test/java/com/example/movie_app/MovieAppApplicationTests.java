@@ -3,6 +3,7 @@ package com.example.movie_app;
 import com.example.movie_app.entity.*;
 import com.example.movie_app.model.Movie_Type;
 import com.example.movie_app.model.User_Role;
+import com.example.movie_app.model.request.UpsertMovieRequest;
 import com.example.movie_app.repository.*;
 import com.github.javafaker.Faker;
 import com.github.slugify.Slugify;
@@ -15,10 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @SpringBootTest
@@ -59,6 +62,24 @@ class MovieAppApplicationTests {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     //là bean cần inject vào nơi cần sử dụng
+
+
+
+
+    @Test
+    void findCountry() {
+//        Optional<Country> country = countryRepository.findById(1);
+//        System.out.println("ct" + country);
+
+        List<Genres> genres = genreRepository.findAllById(List.of(1, 2, 3));
+        System.out.println("Genres: " + genres);
+    }
+    //
+    @Test
+    void findMovieById() {
+        Movie movie = movieRepository.findMovieById(2);
+        System.out.println("Movie: " + movie);
+    }
 
     @Test
     void encode_user_password() {

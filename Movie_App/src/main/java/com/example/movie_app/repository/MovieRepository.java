@@ -16,8 +16,8 @@ public interface MovieRepository extends JpaRepository<Movie, Integer> {
     List<Movie> findByName(String name);// findBy... theo cái gì đấy phải đúng theo tên thuộc tính
 
     List<Movie> findByNameContainingIgnoreCase(String name);
-
-
+    Boolean existsMovieByName(String name);
+    Movie findMovieById(Integer id);
     Movie findByNameAndSlug(String name, String slug);
 
     List<Movie> findByRatingBetween(Double min, Double max);

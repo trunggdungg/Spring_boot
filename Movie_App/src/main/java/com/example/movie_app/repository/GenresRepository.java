@@ -10,4 +10,5 @@ List<Genres> findByName(String name);
 
 List<Genres> findByNameContainingIgnoreCase(String name);
 Genres findBySlug(String slug);
+
 }
